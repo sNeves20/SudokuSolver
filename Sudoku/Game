@@ -36,7 +36,7 @@ def find_empty(b):
 
 
 # Functions that check if the number can be placed in that location
-def check_row (b, row, num):
+def check_row(b, row, num):
     if num in b(row):
         return False
     return True
@@ -44,7 +44,7 @@ def check_row (b, row, num):
 
 def check_col (b, col, num):
     for i in range(len(b)):
-        if b[i , col] == num:
+        if b[i, col] == num:
             return False
     return True
 
@@ -61,4 +61,18 @@ def check_location(b, row, col, num):
 
     row_safe = check_row(b, row, num)
     col_safe = check_col(b, col, num)
-    square_safe = check_square(b, row, col, num)
+    square_safe = check_square(b, row - row % 3, col - col % 3, num)
+
+    if row_safe and col_safe and square_safe:
+        return True
+    else:
+        return False
+
+# Function
+def try_number(board, row, col, num = 0):
+    # tr
+    if check_row(board, row, num) and check_col(board, col, num) and check_square(board, row - row%3, col-col%3, num):
+        return num
+    else:
+        num += 1
+        return try_number(board, row, col, num)
