@@ -1,0 +1,64 @@
+board = [
+    [7,8,0,4,0,0,1,2,0],
+    [6,0,0,0,7,5,0,0,9],
+    [0,0,0,6,0,1,0,7,8],
+    [0,0,7,0,4,0,2,6,0],
+    [0,0,1,0,5,0,9,3,0],
+    [9,0,4,0,6,0,0,0,5],
+    [0,7,0,3,0,0,0,1,2],
+    [1,2,0,0,0,7,4,0,0],
+    [0,4,9,2,0,6,0,0,7]
+]
+
+
+# Function that prints board
+def print_board(b):
+    for i in range(len(b)):
+        if i % 3 == 0 and i != 0:
+            print('- - - - - - - - - - - -')
+
+        for j in range(len(b)):
+            if j % 3 == 0 and j != 0:
+                print(' | ', end='')
+
+            if j == 8:
+                print(b[i][j])
+            else:
+                print(str(b[i][j]) + ' ', end='')
+
+
+# Function that finds empty space
+def find_empty(b):
+    for i in range(len(b)):
+        for j in range(len(b[i])):
+            if b[i][j] == 0:
+                return (i, j)   # row, col
+
+
+# Functions that check if the number can be placed in that location
+def check_row (b, row, num):
+    if num in b(row):
+        return False
+    return True
+
+
+def check_col (b, col, num):
+    for i in range(len(b)):
+        if b[i , col] == num:
+            return False
+    return True
+
+
+def check_square(b, col, row, num):
+    for i in range(3):
+        for j in range(3):
+            if b[row + i][col + j] == num:
+                return False
+    return True
+
+
+def check_location(b, row, col, num):
+
+    row_safe = check_row(b, row, num)
+    col_safe = check_col(b, col, num)
+    square_safe = check_square(b, row, col, num)
