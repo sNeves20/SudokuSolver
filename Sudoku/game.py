@@ -1,5 +1,5 @@
 board = [
-    [7,8,0,4,0,0,1,2,0],
+    [7,8,3,4,0,0,1,2,0],
     [6,0,0,0,7,5,0,0,9],
     [0,0,0,6,0,1,0,7,8],
     [0,0,7,0,4,0,2,6,0],
@@ -72,7 +72,7 @@ def check_location(b, row, col, num):
 
 # Function that recursively tries numbers recursively:
 #   returns a number between 1 and 9 or -1 (if no number between 1-9 checks the constraints)
-def try_number(board, row, col, num=0):
+def try_number(board, row, col, num=1):
     if num > 9:
         return -1
     if check_row(board, row, num) and check_col(board, col, num) and check_square(board, row - row%3, col-col%3, num):
@@ -97,10 +97,8 @@ def solve_board(board):
 
 # Function that implements the backtracking algorithm
 def backtracking(board, row, col,  solved_array, number=0):
-    print(solved_array)
     number = try_number(board, row, col, number)
     if number == -1:
-        print("Number ", -1)
         if not solved_array:
             row, col = find_empty(board)
         else:
@@ -111,8 +109,9 @@ def backtracking(board, row, col,  solved_array, number=0):
 
         backtracking(board, row, col, solved_array, number)
     else:
-
         board[row][col] = number
+        if not solved_array:
+            solved_array = []
         solved_array.append((row, col))
 
         return solved_array
