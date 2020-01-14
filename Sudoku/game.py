@@ -117,4 +117,15 @@ def backtracking(board, row, col,  solved_array, number=0):
         return solved_array
 
 
+def backtracking(board, row, col, number, solved_array):
+    number = try_number(board, row, col, number)
+    if number == -1:
+        board[row][col] = 0
+        row, col = solved_array[-1]
+        solved_array = solved_array[-2]
+        number = board[row][col] + 1
+
+        backtracking(board, row, col, )
+
+
 solve_board(board)
