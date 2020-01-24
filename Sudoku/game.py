@@ -1,5 +1,5 @@
 board = [
-    [7,8,3,4,0,0,1,2,0],
+    [7,8,0,4,0,0,1,2,0],
     [6,0,0,0,7,5,0,0,9],
     [0,0,0,6,0,1,0,7,8],
     [0,0,7,0,4,0,2,6,0],
@@ -36,6 +36,15 @@ def find_empty(b):
     return -1, -1
 
 
+def empty_locations(board):
+    empty = []
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] == 0:
+                empty.append((i,j))
+    return empty
+
+
 # Functions that check if the number can be placed in that location
 def check_row(b, row, num):
     if num in b[row]:
@@ -51,9 +60,11 @@ def check_col(b, col, num):
 
 
 def check_square(b, col, row, num):
-    for i in range(3):
-        for j in range(3):
-            if b[row + i][col + j] == num:
+    box_x = col // 3
+    box_y = row // 3
+    for i in range(box_y * 3, box_y*3 + 3):
+        for j in range(box_x * 3, box_x * 3 + 3):
+            if b[i][j] == num and (i, j) == (row, col):
                 return False
     return True
 
@@ -73,6 +84,8 @@ def check_location(b, row, col, num):
 # Function that recursively tries numbers recursively:
 #   returns a number between 1 and 9 or -1 (if no number between 1-9 checks the constraints)
 def try_number(board, row, col, num=1):
+    if num == 0:
+        num = 1
     if num > 9:
         return -1
     if check_row(board, row, num) and check_col(board, col, num) and check_square(board, row - row%3, col-col%3, num):
@@ -84,48 +97,64 @@ def try_number(board, row, col, num=1):
 
 # Function that solves the board using the back-tracking algorithm
 def solve_board(board):
-    solved_array = []
-    while True:
-        row, col = find_empty(board)
-        if row == -1 and col == -1:
-            break
-        solved_array = backtracking(board, row, col, solved_array)
-
+    empty_array = solve_single_space(board)
+    backtracking(board, empty_array)
     print_board(board)
+
     return
 
 
-# Function that implements the backtracking algorithm
-def backtracking(board, row, col,  solved_array, number=0):
-    number = try_number(board, row, col, number)
-    if number == -1:
-        if not solved_array:
-            row, col = find_empty(board)
-        else:
-            row, col = solved_array[-1]
-            del solved_array[-1]
-        number = board[row][col] + 1
-        board[row][col] = 0
+# Function that solves the only
+def solve_single_space(board):
+    empty_array = empty_locations(board)
+    change = False
+    for row, col in empty_array:
+        number_array = []
+        number = 0
+        while number < 10:
+            number = try_number(board, row, col, number+1)
+            if number == -1:
+                break
+            number_array.append(number)
 
-        backtracking(board, row, col, solved_array, number)
+        if len(number_array) == 1:
+            board[row][col] = number_array[0]
+            change = True
+
+        if change:
+            solve_single_space(board)
+
+    return empty_array
+
+
+# Function that uses the backtracking algorithm
+def backtracking(board, solved_array=[], backFlag=False):
+    if not backFlag:
+        row, col = find_empty(board)
     else:
-        board[row][col] = number
-        if not solved_array:
-            solved_array = []
-        solved_array.append((row, col))
-
-        return solved_array
-
-
-def backtracking(board, row, col, number, solved_array):
-    number = try_number(board, row, col, number)
-    if number == -1:
-        board[row][col] = 0
         row, col = solved_array[-1]
-        solved_array = solved_array[-2]
-        number = board[row][col] + 1
+    if (row, col) == (-1, -1):
+        return
+    number = board[row][col]
+    number = try_number(board, row, col, number)
 
-        backtracking(board, row, col, )
+    if number != -1:
+        board[row][col] = number
+        solved_array.append((row, col))
+        backtracking(board, solved_array)
+    else:
+        solved_array.pop(-1)
+        backtracking(board, solved_array, backFlag=True)
 
 
+
+
+
+
+
+
+print('Original Board:')
+print_board(board)
+print('')
+print('Solved Board:')
 solve_board(board)
