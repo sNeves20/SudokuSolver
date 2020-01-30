@@ -1,6 +1,9 @@
-import tkinter as tk
-r = tk.Tk()
-r.title('Counting Seconds')
-button = tk.Button(r, text='Stop', width=25, height=25, command=r.destroy)
-button.pack()
-r.mainloop()
+from tkinter import *
+
+root = Tk()
+
+# Label Widdged
+myLabel = Label(root, text="Hello World")
+myLabel.pack()
+
+root.mainloop()

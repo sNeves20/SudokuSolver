@@ -1,3 +1,6 @@
+from random import choice
+from random import seed
+
 board = [
     [7,8,0,4,0,0,1,2,0],
     [6,0,0,0,7,5,0,0,9],
@@ -9,6 +12,36 @@ board = [
     [1,2,0,0,0,7,4,0,0],
     [0,4,9,2,0,6,0,0,7]
 ]
+
+board = [
+    [5,3,0,0,7,0,0,0,0],
+    [6,0,0,1,9,5,0,0,0],
+    [0,9,8,0,0,0,0,6,0],
+    [8,0,0,0,6,0,0,0,3],
+    [4,0,0,8,0,3,0,0,1],
+    [7,0,0,0,2,0,0,0,6],
+    [0,6,0,0,0,0,2,8,0],
+    [0,0,0,4,1,9,0,0,0],
+    [0,0,0,0,8,0,0,7,9]
+]
+
+
+empty_board = [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0]
+]
+
+seed(1)
+
+sequence = [i + 1 for i in range(10)]
+print(sequence)
 
 
 # Function that prints board
@@ -98,9 +131,15 @@ def try_number(board, row, col, num=1):
 # Function that solves the board using the back-tracking algorithm
 def solve_board(board):
     empty_array = solve_single_space(board)
-    backtracking(board, empty_array)
+    solved = False
+    array = []
     print_board(board)
+    while not solved:
+        row, col = find_empty(board)
+        print(row, col)
+        solved_array, solved = BackTracking(board, solved_array=array)
 
+    print_board(board)
     return
 
 
@@ -128,33 +167,68 @@ def solve_single_space(board):
 
 
 # Function that uses the backtracking algorithm
-def backtracking(board, solved_array=[], backFlag=False):
+def BackTracking(board, solved_array=[], backFlag = False, number=0):
     if not backFlag:
         row, col = find_empty(board)
     else:
-        row, col = solved_array[-1]
+        if backFlag and len(solved_array) == 1 and board[solved_array[0][0]][solved_array[0][1]]:
+            return solved_array, False
+        if len(solved_array) != 1:
+            row, col = solved_array[-1]
+        else:
+            return solved_array, True
     if (row, col) == (-1, -1):
-        return
-    number = board[row][col]
-    number = try_number(board, row, col, number)
+        return solved_array, True
+
+    if number == 0:
+        number = board[row][col]
+        number = try_number(board, row, col, number)
+    else:
+        number = choice(sequence)
+        number = try_number(board, row, col, num=number)
 
     if number != -1:
         board[row][col] = number
         solved_array.append((row, col))
-        backtracking(board, solved_array)
+        BackTracking(board, solved_array)
     else:
         solved_array.pop(-1)
-        backtracking(board, solved_array, backFlag=True)
+        BackTracking(board, solved_array, backFlag=True)
 
 
+def backtracking(board, row, col, solved_array=[]):
+    number = board[row][col]
+    number = try_number(board, row, col, num=number)
+    print(solved_array)
+    # Solution was found
+    if number != -1:
+        board[row][col] = number
+        solved_array.append((row, col))
+        return solved_array
+    # No solution was found
+    else:
+        if not solved_array:
+            print("This board has no solution")
+            return -666
+        solved_array.pop(-1)
+        row, col = solved_array[-1]
+        backtracking(board, row, col, solved_array)
 
 
+def generate_board(board, sequence):
+    number = choice(sequence)
+    solved = False
+    solved_array = []
+    while not solved:
+        row, col = find_empty(board)
+        number = try_number(board, row, col, num=choice(sequence))
+        solved = backtracking(board, row, col, solved_array)
+    print_board(board)
 
 
-
-
-print('Original Board:')
+print('Single Space Solve:')
 print_board(board)
 print('')
 print('Solved Board:')
 solve_board(board)
+#generate_board(empty_board, sequence)
